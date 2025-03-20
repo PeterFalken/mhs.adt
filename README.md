@@ -52,3 +52,9 @@ This assumes that you have installed Terraform and configured your GCP credentia
     ```
     terraform show
     ```
+
+## Destroy
+1. Destroy resources when no longer neeeded.
+    ```
+    terraform destroy
+    ```
