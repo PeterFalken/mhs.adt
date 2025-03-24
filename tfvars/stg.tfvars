@@ -1,2 +1,3 @@
 environment = "STG"
-subnet_cird = "10.10.241.0/24"
+subnet_cidr = "10.10.241.0/24"
+regions     = ["us-central1", "us-east1"]
