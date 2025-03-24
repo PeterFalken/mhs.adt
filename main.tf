@@ -14,6 +14,11 @@ provider "google" {
   zone    = "us-central1-c"
 }
 
+resource "google_service_account" "service_account" {
+  account_id   = "sa-gcf"
+  display_name = "Google Cloud Function Service Account"
+}
+
 
 # Modules
 module "network" {
@@ -23,5 +28,5 @@ module "network" {
 
 module "cloud_function" {
   source      = "./modules/cloud_function"
-  bucket_name = "my-unique-bucket-name"
+  bucket_name = "gcf-bucket"
 }
