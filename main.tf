@@ -9,11 +9,21 @@ terraform {
 }
 
 provider "google" {
-  project = "adt-takehome"
-  region  = "us-central1"
-  zone    = "us-central1-c"
+  credentials = file("<PATH_TO_SERVICE_ACCOUNT_JSON>")
+  project     = "DEFAULT_PROJECT_ID"
+  region      = "us-central1"
+  zone        = "us-central1-c"
 }
 
+
+resource "google_project" "gc_project" {
+  name       = "SMT Take Home Exercise - ${var.yourname}"
+  project_id = "smt-the-${var.environment}-${var.yourname}-${random_string.rand4char.result}"
+}
+
+output "project_id" {
+  value = google_project.gc_project.project_id
+}
 
 # Modules
 module "cloud_function" {
