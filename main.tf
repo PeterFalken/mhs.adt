@@ -3,7 +3,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "6.25.0"
+      version = "> 6.0.0"
     }
   }
 }
@@ -14,19 +14,18 @@ provider "google" {
   zone    = "us-central1-c"
 }
 
-resource "google_service_account" "service_account" {
-  account_id   = "sa-gcf"
-  display_name = "Google Cloud Function Service Account"
-}
-
 
 # Modules
-module "network" {
-  source      = "./modules/network"
-  subnet_cird = "10.10.240.0/16"
-}
-
 module "cloud_function" {
   source      = "./modules/cloud_function"
-  bucket_name = "gcf-bucket"
+  environment = var.environment
+  regions     = var.regions
+}
+
+module "network" {
+  source         = "./modules/network"
+  environment    = var.environment
+  regions        = var.regions
+  subnet_cidr    = var.subnet_cidr
+  cloud_function = module.cloud_function.gc_function
 }

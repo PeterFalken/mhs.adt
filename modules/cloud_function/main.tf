@@ -6,9 +6,15 @@ resource "google_storage_bucket" "bucket_gcf_source" {
 
 resource "google_storage_bucket_object" "storage_object" {
   name   = "function_source.zip"
-  bucket = google_storage_bucket.bucket.name
+  bucket = google_storage_bucket.bucket_gcf_source.name
   source = "function_source.zip" # Add path to the zipped function source code
 }
+
+resource "google_service_account" "service_account" {
+  account_id   = "sa-gcf"
+  display_name = "Google Cloud Function Service Account"
+}
+
 
 resource "google_storage_bucket_access_control" "bucket_read_access" {
   bucket = google_storage_bucket.bucket_gcf_source.name
@@ -51,7 +57,7 @@ resource "google_cloudfunctions2_function" "gc_function" {
     trigger_region        = "us-central1"
     event_type            = "google.cloud.audit.log.v1.written"
     retry_policy          = "RETRY_POLICY_RETRY"
-    service_account_email = google_service_account.account.email
+    service_account_email = google_service_account.service_account.email
     event_filters {
       attribute = "serviceName"
       value     = "storage.googleapis.com"
@@ -69,13 +75,18 @@ resource "google_cloudfunctions2_function" "gc_function" {
 }
 
 resource "google_cloudfunctions2_function_iam_member" "invoker" {
-  project        = google_cloudfunctions2_function.gc_function.project
-  location       = google_cloudfunctions2_function.gc_function.location
-  cloud_function = google_cloudfunctions2_function.gc_function.name
+  for_each       = toset(var.regions)
+  project        = google_cloudfunctions2_function.gc_function[each.key].project
+  location       = google_cloudfunctions2_function.gc_function[each.key].location
+  cloud_function = google_cloudfunctions2_function.gc_function[each.key].name
   role           = "roles/cloudfunctions.invoker"
   member         = "serviceAccount:${google_service_account.service_account.email}"
 }
 
+output "gc_function" {
+  value = google_cloudfunctions2_function.gc_function
+}
+
 output "function_uri" {
-  value = google_cloudfunctions2_function.gc_function.service_config[0].uri
+  value = google_cloudfunctions2_function.gc_function[0].service_config[0].uri
 }

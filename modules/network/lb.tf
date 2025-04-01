@@ -4,14 +4,15 @@ resource "google_compute_region_network_endpoint_group" "net_endp_grp" {
   network_endpoint_type = "SERVERLESS"
   region                = each.key
   cloud_function {
-    function = google_cloudfunctions2_function.gc_function.name
+    function = var.cloud_function[each.key]
   }
 }
 
 # https://cloud.google.com/blog/topics/developers-practitioners/new-terraform-module-serverless-load-balancing
 module "lb-http" {
-  source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
-  version = "~> 9.0"
+  # source  = "GoogleCloudPlatform/lb-http/google//modules/serverless_negs"
+  source  = "GoogleCloudPlatform/lb-http/google"
+  version = "> 12"
   project = "adt-takehome"
   name    = "lb-cloudfunc"
 
@@ -37,24 +38,18 @@ module "lb-http" {
       }
 
       iap_config = {
-        enable               = false
-        oauth2_client_id     = null
-        oauth2_client_secret = null
+        enable = false
       }
 
-      description            = null
-      custom_request_headers = null
-      security_policy        = null
-    }
+      description = "Default endpoints"
+      # custom_request_headers = null
+      # security_policy        = null
 
-    ## Health checks
-    outlier_detection = {
-      base_ejection_time = {
-        seconds = 10
-      }
-      consecutive_errors = optional(number)
-      interval = {
-        seconds = number
+      ## Health checks
+      health_check = {
+        check_interval_sec = 10
+        timeout_sec        = 5
+        logging            = true
       }
     }
   }

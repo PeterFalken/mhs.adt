@@ -36,7 +36,7 @@ This assumes that you have installed Terraform and configured your GCP credentia
 
 1. Initialize the Terraform Project:
     ```
-    terraform init
+    terraform init -upgrade
     ```
 1. Review the Configuration Plan:
     ```
