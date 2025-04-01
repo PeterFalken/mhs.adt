@@ -9,10 +9,10 @@ terraform {
 }
 
 provider "google" {
-  credentials = file("<PATH_TO_SERVICE_ACCOUNT_JSON>")
-  project     = "DEFAULT_PROJECT_ID"
-  region      = "us-central1"
-  zone        = "us-central1-c"
+  # credentials = file("<PATH_TO_SERVICE_ACCOUNT_JSON>")
+  project = "DEFAULT_PROJECT_ID"
+  region  = "us-central1"
+  zone    = "us-central1-c"
 }
 
 
