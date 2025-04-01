@@ -36,7 +36,7 @@ resource "google_cloudfunctions2_function" "gc_function" {
 
   build_config {
     runtime     = "python312"
-    entry_point = "hello_http"
+    entry_point = "helloWorld"
     source {
       storage_source {
         bucket = google_storage_bucket.bucket_gcf_source.name
